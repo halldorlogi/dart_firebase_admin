@@ -43,6 +43,7 @@ class FirebaseMessagingRequestHandler {
     required String host,
     required String path,
     Object? requestData,
+    String? corsUrl,
   }) async {
     try {
       final client = await firebase.credential.client;
