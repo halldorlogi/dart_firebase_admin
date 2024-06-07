@@ -8,9 +8,9 @@ final _legacyFirebaseMessagingHeaders = {
 
 @internal
 class FirebaseMessagingRequestHandler {
-  FirebaseMessagingRequestHandler(this.firebase);
-
+  FirebaseMessagingRequestHandler(this.firebase, {this.corsUrl});
   final FirebaseAdminApp firebase;
+  final String? corsUrl;
 
   Future<R> _run<R>(
     Future<R> Function(AutoRefreshingAuthClient client) fn,
@@ -43,7 +43,6 @@ class FirebaseMessagingRequestHandler {
     required String host,
     required String path,
     Object? requestData,
-    String? corsUrl,
   }) async {
     try {
       final client = await firebase.credential.client;
@@ -55,6 +54,7 @@ class FirebaseMessagingRequestHandler {
           ..._legacyFirebaseMessagingHeaders,
           'content-type': 'application/json',
           'Authorization': 'Bearer ${client.credentials.accessToken.data}',
+          'Access-Control-Allow-Origin': corsUrl ?? '',
         },
       );
 
@@ -87,8 +87,7 @@ class FirebaseMessagingRequestHandler {
 
     final details = error['details'];
     if (details is List) {
-      const fcmErrorType =
-          'type.googleapis.com/google.firebase.fcm.v1.FcmError';
+      const fcmErrorType = 'type.googleapis.com/google.firebase.fcm.v1.FcmError';
       for (final element in details) {
         if (element is Map && element['@type'] == fcmErrorType) {
           return element['errorCode'] as String?;
@@ -154,8 +153,7 @@ class FirebaseMessagingRequestHandler {
 }
 
 extension on Response {
-  bool get isJson =>
-      headers['content-type']?.contains('application/json') ?? false;
+  bool get isJson => headers['content-type']?.contains('application/json') ?? false;
 }
 
 class _HttpException implements Exception {

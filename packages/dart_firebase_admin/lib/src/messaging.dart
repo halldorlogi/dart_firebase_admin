@@ -25,13 +25,13 @@ class Messaging {
   Messaging(
     this.firebase, {
     @internal FirebaseMessagingRequestHandler? requestHandler,
-  }) : _requestHandler =
-            requestHandler ?? FirebaseMessagingRequestHandler(firebase);
+    this.corsUrl,
+  }) : _requestHandler = requestHandler ?? FirebaseMessagingRequestHandler(firebase, corsUrl: corsUrl);
 
   /// The app associated with this Messaging instance.
   final FirebaseAdminApp firebase;
-
   final FirebaseMessagingRequestHandler _requestHandler;
+  final String? corsUrl;
 
   String get _parent => 'projects/${firebase.projectId}';
 
